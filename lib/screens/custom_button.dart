@@ -54,12 +54,13 @@ class AppButton extends StatelessWidget {
           child: child,
         ));
       case ButtonVariant.danger:
-        return _wrap(ElevatedButton(
+        // Contorno rojo (no sólido) para no competir con el botón principal.
+        return _wrap(OutlinedButton(
           onPressed: onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryRed,
-            foregroundColor: Colors.white,
-            elevation: 0,
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.primaryRed,
+            backgroundColor: AppColors.primaryRed.withValues(alpha: 0.06),
+            side: const BorderSide(color: AppColors.primaryRed),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             minimumSize: Size.zero,
             shape:

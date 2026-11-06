@@ -1,17 +1,68 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
+import 'package:poyectocrosty/providers/parametrizacion/insumo_provider.dart';
+import 'screens/seguridad/login_screen.dart';
 import 'package:provider/provider.dart';
-import 'providers/auth_provider.dart';
-import 'providers/cliente_provider.dart';
-import 'screens/register_screen.dart';
+import 'providers/seguridad/auth_provider.dart';
+import 'providers/parametrizacion/cliente_provider.dart';
 import 'screens/dashboard_screen.dart';
+import 'providers/transaccional/ingreso_bebida_provider.dart';
+import 'providers/transaccional/ingreso_bebida_producto_provider.dart';
+import 'providers/transaccional/ingreso_insumo_provider.dart';
+import 'providers/transaccional/ingreso_insumo_detalle_provider.dart';
+import 'providers/transaccional/merma_provider.dart';
+import 'providers/transaccional/orden_produccion_provider.dart';
+import 'providers/transaccional/orden_produccion_insumo_provider.dart';
+import 'providers/transaccional/produccion_provider.dart';
+import 'providers/transaccional/venta_provider.dart';
+import 'providers/transaccional/detalle_venta_provider.dart';
+import 'providers/transaccional/venta_pago_provider.dart';
+import 'providers/seguridad/usuario_provider.dart';
+import 'providers/seguridad/rol_provider.dart';
+import 'providers/seguridad/asignacion_rol_provider.dart';
+import 'providers/parametrizacion/unidad_medida_provider.dart';
+import 'providers/parametrizacion/tipo_product_provider.dart';
+import 'providers/parametrizacion/producto_provider.dart';
+import 'providers/parametrizacion/produc_composicion_provider.dart';
+import 'providers/parametrizacion/regla_provider.dart';
+import 'navigation/app_navigation.dart';
+import 'screens/app_theme.dart';
+import 'services/local_db.dart';
+import 'services/sync_service.dart';
 
-void main() {
+Future<void> main() async {
+  // debugPrint también escribe en release (visible con logcat); se silencia para no exponer datos.
+  if (kReleaseMode) debugPrint = (String? message, {int? wrapWidth}) {};
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalDb.init();
+  await SyncService.instance.iniciar();
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: SyncService.instance),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => ClienteProvider()),
+        ChangeNotifierProvider(create:(context) => InsumoProvider()),
+        ChangeNotifierProvider(create: (_) => IngresoBebidaProvider()),
+        ChangeNotifierProvider(create: (_) => IngresoBebidaProductoProvider()),
+        ChangeNotifierProvider(create: (_) => IngresoInsumoProvider()),
+        ChangeNotifierProvider(create: (_) => IngresoInsumoDetalleProvider()),
+        ChangeNotifierProvider(create: (_) => MermaProvider()),
+        ChangeNotifierProvider(create: (_) => OrdenProduccionProvider()),
+        ChangeNotifierProvider(create: (_) => OrdenProduccionInsumoProvider()),
+        ChangeNotifierProvider(create: (_) => ProduccionProvider()),
+        ChangeNotifierProvider(create: (_) => VentaProvider()),
+        ChangeNotifierProvider(create: (_) => DetalleVentaProvider()),
+        ChangeNotifierProvider(create: (_) => VentaPagoProvider()),
+        ChangeNotifierProvider(create: (_) => UsuarioProvider()),
+        ChangeNotifierProvider(create: (_) => RolProvider()),
+        ChangeNotifierProvider(create: (_) => AsignacionRolProvider()),
+        ChangeNotifierProvider(create: (_) => UnidadMedidaProvider()),
+        ChangeNotifierProvider(create: (_) => TipoProductProvider()),
+        ChangeNotifierProvider(create: (_) => ProductoProvider()),
+        ChangeNotifierProvider(create: (_) => ProductoComposicionProvider()),
+        ChangeNotifierProvider(create: (_) => ReglaConversionProvider()),
+
       ],
       child: const MyApp(),
     ),
@@ -26,17 +77,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'POLLOS KROSTY-SADO',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor:Colors.deepPurple,
-          primary: const Color(0xFF007bff),
-          secondary: const Color(0xFF343a40),
-        ),
-          useMaterial3:true,
-          scaffoldBackgroundColor: const Color(0xFFf8f9fa),
-      ),
+      theme: AppTheme.light,
 
     home:const AuthWrapper(),
+      routes: AppNavigation.getRoutes(context),
     );
   }
 }
