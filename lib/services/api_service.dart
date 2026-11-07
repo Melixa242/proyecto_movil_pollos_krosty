@@ -12,12 +12,22 @@ class ApiService {
   /// Por compatibilidad: `ApiService()` es la API web.
   factory ApiService() => web;
 
-  // Windows / Chrome (misma PC que el servidor):
-  static const web = ApiService._('web', 'http://127.0.0.1:8000/api', usaToken: true);
+  // URLs configurables al compilar con --dart-define (ej. en Docker/Render):
+  //   flutter build web --dart-define=API_WEB_URL=https://mi-api.onrender.com/api
+  // Por defecto: Windows / Chrome (misma PC que el servidor).
+  static const web = ApiService._(
+    'web',
+    String.fromEnvironment('API_WEB_URL', defaultValue: 'http://127.0.0.1:8000/api'),
+    usaToken: true,
+  );
   //static const web = ApiService._('web', 'http://10.0.2.2:8000/api', usaToken: true);
 
   // Servidor transaccional en Dart (E:\proyectoKrosty, puerto 8081), misma PC:
-  static const local = ApiService._('local', 'http://127.0.0.1:8081/api', usaToken: false);
+  static const local = ApiService._(
+    'local',
+    String.fromEnvironment('API_LOCAL_URL', defaultValue: 'http://127.0.0.1:8081/api'),
+    usaToken: false,
+  );
   //static const local = ApiService._('local', 'http://10.0.2.2:8081/api', usaToken: false);
 
   /// Instancia según el nombre guardado en SQLite ('web' | 'local').

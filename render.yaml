@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: pollos-krosty-web
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      # URL pública de la API Laravel desplegada (terminar en /api)
+      - key: API_WEB_URL
+        sync: false
+      # URL pública del servidor transaccional Dart (terminar en /api)
+      - key: API_LOCAL_URL
+        sync: false
