@@ -28,12 +28,14 @@ import 'providers/parametrizacion/regla_provider.dart';
 import 'navigation/app_navigation.dart';
 import 'screens/app_theme.dart';
 import 'services/local_db.dart';
+import 'services/api_service.dart';
 import 'services/sync_service.dart';
 
 Future<void> main() async {
   // debugPrint también escribe en release (visible con logcat); se silencia para no exponer datos.
   if (kReleaseMode) debugPrint = (String? message, {int? wrapWidth}) {};
   WidgetsFlutterBinding.ensureInitialized();
+  ApiService.despertarServidores();
   await LocalDb.init();
   await SyncService.instance.iniciar();
   runApp(
