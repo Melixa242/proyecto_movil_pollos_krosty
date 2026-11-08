@@ -2,9 +2,11 @@
 FROM ghcr.io/cirruslabs/flutter:3.41.2 AS build
 
 # URLs de las APIs (Render pasa las variables de entorno como build args)
-ARG API_WEB_URL=http://127.0.0.1:8000/api
-ARG API_LOCAL_URL=http://127.0.0.1:8081/api
+ARG API_WEB_URL=https://iproduccion-pollos-crostizado.onrender.com/api
+ARG API_LOCAL_URL=https://api-transaccional.onrender.com/api
+# Clave del servidor Dart (acepta API_LOCAL_KEY o API_KEY; vacía = sin clave)
 ARG API_LOCAL_KEY=
+ARG API_KEY=
 
 WORKDIR /app
 
@@ -16,7 +18,7 @@ COPY . .
 RUN flutter build web --release \
       --dart-define=API_WEB_URL=${API_WEB_URL} \
       --dart-define=API_LOCAL_URL=${API_LOCAL_URL} \
-      --dart-define=API_LOCAL_KEY=${API_LOCAL_KEY}
+      --dart-define=API_LOCAL_KEY=${API_LOCAL_KEY:-$API_KEY}
 
 # ---------- Etapa 2: servir con nginx ----------
 FROM nginx:1.27-alpine

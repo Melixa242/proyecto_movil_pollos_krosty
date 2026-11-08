@@ -12,22 +12,24 @@ class ApiService {
   /// Por compatibilidad: `ApiService()` es la API web.
   factory ApiService() => web;
 
-  // URLs configurables al compilar con --dart-define (ej. en Docker/Render):
-  //   flutter build web --dart-define=API_WEB_URL=https://mi-api.onrender.com/api
-  // Por defecto: Windows / Chrome (misma PC que el servidor).
+  // Por defecto apuntan a los servidores desplegados en Render (sirve igual
+  // para el APK y para la web). Para desarrollo local se sobreescriben con:
+  //   flutter run --dart-define=API_WEB_URL=http://127.0.0.1:8000/api \
+  //               --dart-define=API_LOCAL_URL=http://127.0.0.1:8081/api
+  // API Laravel: requiere login (token Bearer de Sanctum).
   static const web = ApiService._(
     'web',
-    String.fromEnvironment('API_WEB_URL', defaultValue: 'http://127.0.0.1:8000/api'),
+    String.fromEnvironment('API_WEB_URL', defaultValue: 'https://iproduccion-pollos-crostizado.onrender.com/api'),
     usaToken: true,
   );
   //static const web = ApiService._('web', 'http://10.0.2.2:8000/api', usaToken: true);
 
-  // Servidor transaccional en Dart (E:\proyectoKrosty, puerto 8081), misma PC:
+  // Servidor transaccional en Dart: sin login de usuario.
   static const local = ApiService._(
     'local',
-    String.fromEnvironment('API_LOCAL_URL', defaultValue: 'http://127.0.0.1:8081/api'),
+    String.fromEnvironment('API_LOCAL_URL', defaultValue: 'https://api-transaccional.onrender.com/api'),
     usaToken: false,
-    // Debe coincidir con API_KEY del servidor Dart (vacía en desarrollo).
+    // Opcional: sólo si el servidor Dart define API_KEY se envía como X-API-Key.
     apiKey: String.fromEnvironment('API_LOCAL_KEY'),
   );
   //static const local = ApiService._('local', 'http://10.0.2.2:8081/api', usaToken: false);
