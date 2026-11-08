@@ -7,7 +7,7 @@ import 'local_db.dart';
 import 'sync_service.dart';
 
 class ApiService {
-  const ApiService._(this.nombre, this.baseUrl, {required this.usaToken});
+  const ApiService._(this.nombre, this.baseUrl, {required this.usaToken, this.apiKey = ''});
 
   /// Por compatibilidad: `ApiService()` es la API web.
   factory ApiService() => web;
@@ -27,6 +27,8 @@ class ApiService {
     'local',
     String.fromEnvironment('API_LOCAL_URL', defaultValue: 'http://127.0.0.1:8081/api'),
     usaToken: false,
+    // Debe coincidir con API_KEY del servidor Dart (vacía en desarrollo).
+    apiKey: String.fromEnvironment('API_LOCAL_KEY'),
   );
   //static const local = ApiService._('local', 'http://10.0.2.2:8081/api', usaToken: false);
 
@@ -36,6 +38,9 @@ class ApiService {
   final String nombre;
   final String baseUrl;
   final bool usaToken;
+
+  /// Se envía como `X-API-Key` si no está vacía.
+  final String apiKey;
 
   static const _timeout = Duration(seconds: 10);
 
@@ -64,6 +69,7 @@ class ApiService {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
+      if (apiKey.isNotEmpty) 'X-API-Key': apiKey,
     };
   }
 

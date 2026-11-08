@@ -14,3 +14,6 @@ services:
       # URL pública del servidor transaccional Dart (terminar en /api)
       - key: API_LOCAL_URL
         sync: false
+      # Igual a API_KEY del servicio api-transaccional
+      - key: API_LOCAL_KEY
+        sync: false
