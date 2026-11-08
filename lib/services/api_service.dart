@@ -44,7 +44,19 @@ class ApiService {
   /// Se envía como `X-API-Key` si no está vacía.
   final String apiKey;
 
-  static const _timeout = Duration(seconds: 10);
+  // Los servidores en el plan free de Render se duermen tras ~15 min sin uso
+  // y tardan hasta ~50 s en despertar; con menos tiempo la app daba "sin conexión".
+  static const _timeout = Duration(seconds: 60);
+
+  /// Pide algo a cada servidor (sin esperar la respuesta) para que Render los
+  /// despierte mientras el usuario está en el login.
+  static void despertarServidores() {
+    for (final api in [web, local]) {
+      http.get(Uri.parse(api.baseUrl), headers: {'Accept': 'application/json'})
+          .timeout(const Duration(seconds: 90))
+          .then((_) {}, onError: (_) {});
+    }
+  }
 
   /// Endpoints que requieren servidor y nunca se encolan offline.
   static const _soloOnline = ['login', 'register', 'logout'];
@@ -127,7 +139,7 @@ class ApiService {
     if (campoArchivo != null && bytes != null) {
       request.files.add(http.MultipartFile.fromBytes(campoArchivo, bytes, filename: nombreArchivo ?? 'archivo'));
     }
-    final streamed = await request.send().timeout(const Duration(seconds: 30));
+    final streamed = await request.send().timeout(const Duration(seconds: 90));
     return http.Response.fromStream(streamed);
   }
 
